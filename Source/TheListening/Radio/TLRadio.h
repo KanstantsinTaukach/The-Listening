@@ -3,29 +3,36 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
-#include "TLRadioManager.generated.h"
+#include "GameFramework/Actor.h"
+#include "TLRadio.generated.h"
 
 class ATLRadioStation;
 
 UCLASS()
-class THELISTENING_API UTLRadioManager : public UObject
+class THELISTENING_API ATLRadio : public AActor
 {
     GENERATED_BODY()
 
 protected:
-    UPROPERTY(EditAnywhere, Category = "Statios")
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stations")
     TArray<ATLRadioStation*> Stations;
 
-    UPROPERTY()
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stations")
     ATLRadioStation* CurrentStation;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stations")
+    ATLRadioStation* DefaultStation;
+
+    virtual void BeginPlay() override;
+
 public:
-    UFUNCTION(BlueprintCallable, Category = "Radio")
-    void InitializeStations(UWorld* World);
+    ATLRadio();
 
     UFUNCTION(BlueprintCallable, Category = "Radio")
-    void FindNearestStation(float TargetFrequency);
+    void InitializeStations();
+
+    UFUNCTION(BlueprintCallable, Category = "Radio")
+    void FindStation(float TargetFrequency);
 
     UFUNCTION(BlueprintCallable, Category = "Radio")
     void PlayCurrentStation(UAudioComponent* AudioComponent);

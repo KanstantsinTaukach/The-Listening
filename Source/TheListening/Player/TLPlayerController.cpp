@@ -2,9 +2,12 @@
 
 #include "TLPlayerController.h"
 #include "../UI/TLRadioWidget.h"
-#include "../Radio/TLRadioManager.h"
+#include "../Radio/TLRadio.h"
 #include "../Radio/TLRadioStation.h"
 #include "Components/AudioComponent.h"
+#include "Kismet/GameplayStatics.h"
+
+DEFINE_LOG_CATEGORY_STATIC(LogATLPlayerController, All, All);
 
 ATLPlayerController::ATLPlayerController() 
 {
@@ -31,10 +34,10 @@ void ATLPlayerController::BeginPlay()
         RadioAudioComponent = ControllerPawn->FindComponentByClass<UAudioComponent>();
     }
 
-    RadioManager = NewObject<UTLRadioManager>(this);
-    if (RadioManager)
+    const auto Radio = Cast<ATLRadio>(UGameplayStatics::GetActorOfClass(GetWorld(), ATLRadio::StaticClass()));
+    if (!Radio)
     {
-        RadioManager->InitializeStations(GetWorld());
+        UE_LOG(LogATLPlayerController, Error, TEXT("Radio not found in level!"));
     }
 }
 
@@ -62,13 +65,13 @@ void ATLPlayerController::OnDecreaseFrequency()
 
 void ATLPlayerController::UpdateRadio() 
 {
-    RadioManager->FindNearestStation(CurrentFrequency);
-    RadioManager->PlayCurrentStation(RadioAudioComponent);
-
-    FString Message = RadioManager->GetCurrentStation() ? RadioManager->GetCurrentStation()->GetMessage() : "No signal";
+    auto Radio = Cast<ATLRadio>(UGameplayStatics::GetActorOfClass(GetWorld(), ATLRadio::StaticClass()));
+    Radio->FindStation(CurrentFrequency);
+    Radio->PlayCurrentStation(RadioAudioComponent);
+   
     if (RadioWidget)
     {
-        RadioWidget->UpdateMessageDisplay(Message);
+        RadioWidget->UpdateMessageDisplay(Radio->GetCurrentStation()->GetMessage());
         RadioWidget->UpdateFrequencyDisplay(CurrentFrequency);
     }
 }

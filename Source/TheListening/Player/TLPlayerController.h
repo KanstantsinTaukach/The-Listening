@@ -7,7 +7,7 @@
 #include "TLPlayerController.generated.h"
 
 class UTLRadioWidget;
-class UTLRadioManager;
+class UTLRadio;
 
 UCLASS()
 class THELISTENING_API ATLPlayerController : public APlayerController
@@ -26,9 +26,6 @@ protected:
 
     UPROPERTY()
     UTLRadioWidget* RadioWidget;
-
-    UPROPERTY()
-    UTLRadioManager* RadioManager;
 
     UFUNCTION(BlueprintCallable, Category = "Input")
     void OnIncreaseFrequency();
