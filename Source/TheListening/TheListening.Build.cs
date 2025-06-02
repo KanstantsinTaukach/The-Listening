@@ -15,7 +15,6 @@ public class TheListening : ModuleRules
 		PublicIncludePaths.AddRange(new string[]
 		{
 			"TheListening/Player"
-
 		});
 
 		// Uncomment if you are using Slate UI
