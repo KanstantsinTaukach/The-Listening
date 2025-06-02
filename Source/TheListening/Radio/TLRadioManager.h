@@ -22,6 +22,9 @@ protected:
 
 public:
     UFUNCTION(BlueprintCallable, Category = "Radio")
+    void InitializeStations(UWorld* World);
+
+    UFUNCTION(BlueprintCallable, Category = "Radio")
     void FindNearestStation(float TargetFrequency);
 
     UFUNCTION(BlueprintCallable, Category = "Radio")
@@ -29,4 +32,6 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Radio")
     void TriggerAnomaly();
+
+    ATLRadioStation* GetCurrentStation() const { return CurrentStation; };
 };

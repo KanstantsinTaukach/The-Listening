@@ -7,6 +7,7 @@
 #include "TLCharacter.generated.h"
 
 class UCameraComponent;
+class UAudioComponent;
 
 UCLASS()
 class THELISTENING_API ATLCharacter : public ACharacter
@@ -20,8 +21,10 @@ public:
 
 protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
-    UCameraComponent* Camera;
+    UCameraComponent* CameraComponent;
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Audio")
+    UAudioComponent* RadioAudioComponent;
 
     virtual void BeginPlay() override;
 };

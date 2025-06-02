@@ -2,8 +2,27 @@
 
 #include "TLRadioManager.h"
 #include "TLRadioStation.h"
+#include "Kismet/GameplayStatics.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogRadioManager, All, All);
+
+void UTLRadioManager::InitializeStations(UWorld* World)
+{
+    if (!World) return;
+
+    TArray<AActor*> FoundActors;
+    UGameplayStatics::GetAllActorsOfClass(World, ATLRadioStation::StaticClass(), FoundActors);
+
+    for (const auto Actor : FoundActors)
+    {
+        if (const auto Station = Cast<ATLRadioStation>(Actor))
+        {
+            Stations.Add(Station);
+        }
+    }
+
+    UE_LOG(LogRadioManager, Log, TEXT("Found %d radio stations"), Stations.Num());
+}
 
 void UTLRadioManager::FindNearestStation(float TargetFrequency)
 {

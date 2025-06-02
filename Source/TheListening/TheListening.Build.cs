@@ -15,7 +15,8 @@ public class TheListening : ModuleRules
 		PublicIncludePaths.AddRange(new string[]
 		{
 			"TheListening/Player",
-			"TheListentng/Radio"
+			"TheListening/Radio",
+			"TheListening/UI"
 		});
 
 		// Uncomment if you are using Slate UI
