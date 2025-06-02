@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "TLCharacter.generated.h"
 
+class UCameraComponent;
+
 UCLASS()
 class THELISTENING_API ATLCharacter : public ACharacter
 {
@@ -14,9 +16,12 @@ class THELISTENING_API ATLCharacter : public ACharacter
 public:
     ATLCharacter();
 
-protected:
-    virtual void BeginPlay() override;
-
-public:
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+protected:
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+    UCameraComponent* Camera;
+
+
+    virtual void BeginPlay() override;
 };
