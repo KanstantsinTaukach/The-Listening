@@ -7,7 +7,7 @@
 #include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
 
-DEFINE_LOG_CATEGORY_STATIC(LogATLPlayerController, All, All);
+DEFINE_LOG_CATEGORY_STATIC(LogTLPlayerController, All, All);
 
 ATLPlayerController::ATLPlayerController() 
 {
@@ -37,7 +37,7 @@ void ATLPlayerController::BeginPlay()
     const auto Radio = Cast<ATLRadio>(UGameplayStatics::GetActorOfClass(GetWorld(), ATLRadio::StaticClass()));
     if (!Radio)
     {
-        UE_LOG(LogATLPlayerController, Error, TEXT("Radio not found in level!"));
+        UE_LOG(LogTLPlayerController, Error, TEXT("Radio not found in level!"));
     }
 }
 
@@ -74,4 +74,9 @@ void ATLPlayerController::UpdateRadio()
         RadioWidget->UpdateMessageDisplay(Radio->GetCurrentStation()->GetMessage());
         RadioWidget->UpdateFrequencyDisplay(CurrentFrequency);
     }
+}
+
+void ATLPlayerController::RecordCurrentSignal() 
+{
+
 }

@@ -7,6 +7,7 @@
 #include "TLRadioWidget.generated.h"
 
 class UTextBlock;
+class UButton;
 
 UCLASS()
 class THELISTENING_API UTLRadioWidget : public UUserWidget
@@ -20,10 +21,16 @@ protected:
     UPROPERTY(meta = (BindWidget))
     UTextBlock* MessageText;
 
+    UPROPERTY(meta = (Bindwidget))
+    UButton* RecordButton;
+
 public:
     UFUNCTION(BlueprintCallable)
     void UpdateFrequencyDisplay(const float TargetFrequency);
 
     UFUNCTION(BlueprintCallable)
     void UpdateMessageDisplay(const FString& TargetMessage);
+
+    UFUNCTION()
+    void OnRecordButtonClicked();
 };

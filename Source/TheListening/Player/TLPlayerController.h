@@ -17,6 +17,9 @@ class THELISTENING_API ATLPlayerController : public APlayerController
 public:
     ATLPlayerController();
 
+    UFUNCTION(BlueprintCallable, Category = "Radio")
+    void RecordCurrentSignal();
+
 protected:
     UPROPERTY(EditAnywhere, Category = "UI")
     TSubclassOf<UUserWidget> RadioClass;

@@ -3,8 +3,9 @@
 #include "TLRadio.h"
 #include "TLRadioStation.h"
 #include "Kismet/GameplayStatics.h"
+#include "../Anomaly/TLAnomalyEvent.h"
 
-DEFINE_LOG_CATEGORY_STATIC(LogRadio, All, All);
+DEFINE_LOG_CATEGORY_STATIC(LogTLRadio, All, All);
 
 ATLRadio::ATLRadio()
 {
@@ -32,7 +33,7 @@ void ATLRadio::InitializeStations()
         }
     }
 
-    UE_LOG(LogRadio, Log, TEXT("Found %d radio stations"), Stations.Num());
+    UE_LOG(LogTLRadio, Log, TEXT("Found %d radio stations"), Stations.Num());
 }
 
 void ATLRadio::FindStation(float TargetFrequency)
@@ -50,7 +51,12 @@ void ATLRadio::FindStation(float TargetFrequency)
         }
     }
 
-    UE_LOG(LogRadio, Log, TEXT("Tuned to %f MHz: %s"), TargetFrequency, *CurrentStation->GetMessage());
+    UE_LOG(LogTLRadio, Log, TEXT("Tuned to %f MHz: %s"), TargetFrequency, *CurrentStation->GetMessage());
+
+    if (CurrentStation && CurrentStation->GetIsAnomalous())
+    {
+        TriggerAnomaly();
+    }
 }
 
 void ATLRadio::PlayCurrentStation(UAudioComponent* AudioComponent)
@@ -65,6 +71,12 @@ void ATLRadio::TriggerAnomaly()
 {
     if (CurrentStation && CurrentStation->GetIsAnomalous())
     {
-        UE_LOG(LogRadio, Warning, TEXT("ANOMALY DETECTED: %s"), *CurrentStation->GetMessage());
+        const auto Anomaly = Cast<ATLAnomalyEvent>(UGameplayStatics::GetActorOfClass(this, ATLAnomalyEvent::StaticClass()));
+        if (Anomaly)
+        {
+            Anomaly->ActivateAnomaly();
+
+            UE_LOG(LogTLRadio, Warning, TEXT("ANOMALY DETECTED: %s"), *CurrentStation->GetMessage());
+        }
     }
 }
