@@ -7,6 +7,7 @@
 #include "TLAnomalyEvent.generated.h"
 
 class USoundWave;
+class UCameraShakeBase;
 
 UCLASS()
 class THELISTENING_API ATLAnomalyEvent : public AActor
@@ -27,7 +28,7 @@ public:
 
 protected:
     UPROPERTY(EditAnywhere, Category = "Anomaly | Effects")
-    float Intensity;
+    float Intensity = 1.0f;
 
     UPROPERTY(EditAnywhere, Category = "Anomaly | Settings")
     float Duration = 3.0f;
@@ -38,5 +39,12 @@ protected:
     UPROPERTY(EditAnywhere, Category = "Anomaly | Affected Actors")
     TArray<AActor*> AffectedActors;
 
+    UPROPERTY(EditDefaultsOnly, Category = "Anomaly | Shake")
+    TSubclassOf<UCameraShakeBase> AnomalyCameraShake;
+
     virtual void BeginPlay() override;
+
+private:
+    void PlayCameraShake();
+    void PlayAnomalySound();
 };

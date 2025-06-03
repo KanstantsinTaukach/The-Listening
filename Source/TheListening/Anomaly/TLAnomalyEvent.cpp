@@ -4,6 +4,7 @@
 #include "Sound/SoundWave.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
+#include "Camera/CameraShakeBase.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogTLAnomalyEvent, All, All);
 
@@ -17,16 +18,14 @@ void ATLAnomalyEvent::BeginPlay()
     Super::BeginPlay();
 }
 
-void ATLAnomalyEvent::ActivateAnomaly() 
+void ATLAnomalyEvent::ActivateAnomaly()
 {
     if (!GetWorld()) return;
 
     UE_LOG(LogTLAnomalyEvent, Warning, TEXT("Anomaly Activated with intensity: %f"), Intensity);
 
-    if (AnomalySound)
-    {
-        UGameplayStatics::SpawnSound2D(GetWorld(), AnomalySound);
-    }
+    PlayAnomalySound();
+    PlayCameraShake();
 
     for (const auto Actor : AffectedActors)
     {
@@ -43,12 +42,28 @@ void ATLAnomalyEvent::ActivateAnomaly()
     }
 }
 
-void ATLAnomalyEvent::OnAnomalyStart(AActor* Actor) 
+void ATLAnomalyEvent::OnAnomalyStart(AActor* Actor)
 {
     UE_LOG(LogTLAnomalyEvent, Log, TEXT("Anomaly started on actor: %s"), *Actor->GetName());
 }
 
-void ATLAnomalyEvent::OnAnomalyEnd(AActor* Actor) 
+void ATLAnomalyEvent::OnAnomalyEnd(AActor* Actor)
 {
     UE_LOG(LogTLAnomalyEvent, Log, TEXT("Anomaly ended on actor: %s"), *Actor->GetName());
+}
+
+void ATLAnomalyEvent::PlayCameraShake()
+{
+    if (AnomalyCameraShake)
+    {
+        UGameplayStatics::GetPlayerCameraManager(this, 0)->StartCameraShake(AnomalyCameraShake, Intensity);
+    }
+}
+
+void ATLAnomalyEvent::PlayAnomalySound()
+{
+    if (AnomalySound)
+    {
+        UGameplayStatics::SpawnSound2D(GetWorld(), AnomalySound);
+    }
 }
