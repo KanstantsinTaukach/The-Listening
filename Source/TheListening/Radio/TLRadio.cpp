@@ -75,8 +75,6 @@ void ATLRadio::TriggerAnomaly()
         if (Anomaly)
         {
             Anomaly->ActivateAnomaly();
-
-            UE_LOG(LogTLRadio, Warning, TEXT("ANOMALY DETECTED: %s"), *CurrentStation->GetMessage());
         }
     }
 }
