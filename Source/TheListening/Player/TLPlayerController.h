@@ -8,6 +8,8 @@
 
 class UTLRadioWidget;
 class UTLRadio;
+class UTLRecordsWidget;
+class UTLRecordLog;
 
 UCLASS()
 class THELISTENING_API ATLPlayerController : public APlayerController
@@ -20,15 +22,28 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Radio")
     void RecordCurrentSignal();
 
+    UFUNCTION(BlueprintCallable, Category = "UI")
+    void OpenRecordLogUI();
+
+    UFUNCTION(BlueprintCallable, Category = "UI")
+    void CloseRecordLogUI();
+
 protected:
     UPROPERTY(EditAnywhere, Category = "UI")
-    TSubclassOf<UUserWidget> RadioClass;
+    TSubclassOf<UUserWidget> RadioWidgetClass;
+    UPROPERTY()
+    UTLRadioWidget* RadioWidget;
 
     UPROPERTY()
     UAudioComponent* RadioAudioComponent;
 
+    UPROPERTY(EditAnywhere, Category = "UI")
+    TSubclassOf<UUserWidget> RecordWidgetClass;
     UPROPERTY()
-    UTLRadioWidget* RadioWidget;
+    UTLRecordsWidget* RecordsWidget;
+
+    UPROPERTY()
+    UTLRecordLog* RadioLog;
 
     UFUNCTION(BlueprintCallable, Category = "Input")
     void OnIncreaseFrequency();

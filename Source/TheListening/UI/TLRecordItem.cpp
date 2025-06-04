@@ -6,20 +6,18 @@
 
 void UTLRecordItem::SetRecordData(const FSignalRecord& Record)
 {
-    RecordData = Record;
-
     if (FrequencyLabel)
     {
-        FrequencyLabel->SetText(FText::FromString(FString::Printf(TEXT("%.1 MHz"), RecordData.Frequency)));
+        FrequencyLabel->SetText(FText::FromString(FString::Printf(TEXT("%.1f MHz"), Record.Frequency)));
     }
 
     if (MessagePreview)
     {
-        MessagePreview->SetText(FText::FromString(RecordData.Message.Left(30) + "..."));
+        MessagePreview->SetText(FText::FromString(Record.Message.Left(30) + "..."));
     }
 
     if (AnomalyIndicatorImage)
     {
-        AnomalyIndicatorImage->SetVisibility(RecordData.bIsAnomalous ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+        AnomalyIndicatorImage->SetVisibility(Record.bIsAnomalous ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
     }
 }

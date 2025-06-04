@@ -25,9 +25,6 @@ protected:
     UPROPERTY(meta = (BindWidget))
     UImage* AnomalyIndicatorImage;
 
-    UPROPERTY()
-    FSignalRecord RecordData;
-
 public:
     UFUNCTION(BlueprintCallable)
     void SetRecordData(const FSignalRecord& Record);

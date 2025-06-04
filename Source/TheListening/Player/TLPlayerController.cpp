@@ -2,8 +2,10 @@
 
 #include "TLPlayerController.h"
 #include "../UI/TLRadioWidget.h"
+#include "../UI/TLRecordsWidget.h"
 #include "../Radio/TLRadio.h"
 #include "../Radio/TLRadioStation.h"
+#include "../Records/TLRecordLog.h"
 #include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -19,9 +21,9 @@ void ATLPlayerController::BeginPlay()
 {
     Super::BeginPlay();
 
-    if (RadioClass)
+    if (RadioWidgetClass)
     {
-        RadioWidget = CreateWidget<UTLRadioWidget>(this, RadioClass);
+        RadioWidget = CreateWidget<UTLRadioWidget>(this, RadioWidgetClass);
         if (RadioWidget)
         {
             RadioWidget->AddToViewport();
@@ -34,11 +36,7 @@ void ATLPlayerController::BeginPlay()
         RadioAudioComponent = ControllerPawn->FindComponentByClass<UAudioComponent>();
     }
 
-    const auto Radio = Cast<ATLRadio>(UGameplayStatics::GetActorOfClass(GetWorld(), ATLRadio::StaticClass()));
-    if (!Radio)
-    {
-        UE_LOG(LogTLPlayerController, Error, TEXT("Radio not found in level!"));
-    }
+    RadioLog = NewObject<UTLRecordLog>();
 }
 
 void ATLPlayerController::SetupInputComponent()
@@ -49,6 +47,9 @@ void ATLPlayerController::SetupInputComponent()
 
     InputComponent->BindAction("IncreaseFrequency", IE_Pressed, this, &ATLPlayerController::OnIncreaseFrequency);
     InputComponent->BindAction("DecreaseFrequency", IE_Pressed, this, &ATLPlayerController::OnDecreaseFrequency);
+    InputComponent->BindAction("RecordSignal", IE_Pressed, this, &ATLPlayerController::RecordCurrentSignal);
+    InputComponent->BindAction("OpenRecords", IE_Pressed, this, &ATLPlayerController::OpenRecordLogUI);
+    InputComponent->BindAction("CloseRecords", IE_Pressed, this, &ATLPlayerController::CloseRecordLogUI);
 }
 
 void ATLPlayerController::OnIncreaseFrequency()
@@ -76,7 +77,48 @@ void ATLPlayerController::UpdateRadio()
     }
 }
 
-void ATLPlayerController::RecordCurrentSignal() 
+void ATLPlayerController::RecordCurrentSignal()
 {
+    const auto Radio = Cast<ATLRadio>(UGameplayStatics::GetActorOfClass(GetWorld(), ATLRadio::StaticClass()));
+    if (!GetWorld() || !Radio || !Radio->GetCurrentStation() || !RadioLog) return;
 
+    float Time = GetWorld()->GetTimeSeconds();
+    if (const auto CurrentStation = Radio->GetCurrentStation())
+    {
+        RadioLog->AddRecord(CurrentStation->GetFrequency(), CurrentStation->GetMessage(), Time, CurrentStation->GetIsAnomalous());
+
+        /*if (RecordsWidget)
+        {
+            RecordsWidget->SetRecordList(RadioLog->GetAllRecords());
+        }*/
+    }
+}
+
+void ATLPlayerController::OpenRecordLogUI()
+{
+    if (!RecordWidgetClass) return;
+
+    if (!RecordsWidget)
+    {
+        RecordsWidget = CreateWidget<UTLRecordsWidget>(this, RecordWidgetClass);
+    }
+
+    if (RecordsWidget)
+    {
+        if (!RecordsWidget->IsInViewport())
+        {
+            RecordsWidget->AddToViewport();
+        }
+
+        RecordsWidget->SetVisibility(ESlateVisibility::Visible);
+        RecordsWidget->SetRecordList(RadioLog->GetAllRecords());
+    }
+}
+
+void ATLPlayerController::CloseRecordLogUI() 
+{
+    if (RecordsWidget)
+    {
+        RecordsWidget->SetVisibility(ESlateVisibility::Hidden);
+    }
 }

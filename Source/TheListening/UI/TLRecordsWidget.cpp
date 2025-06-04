@@ -9,11 +9,17 @@ void UTLRecordsWidget::SetRecordList(const TArray<FSignalRecord>& Records)
 {
     if (!GetWorld() || !RecordListView) return;
 
+    RecordListView->ClearChildren();
+
     for (const FSignalRecord& Record : Records)
     {
         const auto RecordItem = CreateWidget<UTLRecordItem>(GetWorld(), RecordItemClass);
 
-        RecordItem->SetRecordData(Record);
+        if (RecordItem && RecordListView)
+        {
+            RecordItem->SetRecordData(Record);
+            RecordListView->AddChild(RecordItem);
+        }
     }
 }
 
@@ -21,7 +27,7 @@ void UTLRecordsWidget::OnRecordSelected(FSignalRecord SelectedRecord)
 {
     if (FrequencyText)
     {
-        FrequencyText->SetText(FText::FromString(FString::Printf(TEXT("%.1 MHz"), SelectedRecord.Frequency)));
+        FrequencyText->SetText(FText::FromString(FString::Printf(TEXT("%.1f MHz"), SelectedRecord.Frequency)));
     }
 
     if (MessageText)
