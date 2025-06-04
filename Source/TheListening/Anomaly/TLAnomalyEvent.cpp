@@ -54,15 +54,16 @@ void ATLAnomalyEvent::OnAnomalyEnd(AActor* Actor)
 
 void ATLAnomalyEvent::PlayCameraShake()
 {
-    if (AnomalyCameraShake)
+    APlayerCameraManager* CamManager = UGameplayStatics::GetPlayerCameraManager(this, 0);
+    if (AnomalyCameraShake && CamManager)
     {
-        UGameplayStatics::GetPlayerCameraManager(this, 0)->StartCameraShake(AnomalyCameraShake, Intensity);
+        CamManager->StartCameraShake(AnomalyCameraShake, Intensity);
     }
 }
 
 void ATLAnomalyEvent::PlayAnomalySound()
 {
-    if (AnomalySound)
+    if (GetWorld() && AnomalySound)
     {
         UGameplayStatics::SpawnSound2D(GetWorld(), AnomalySound);
     }
