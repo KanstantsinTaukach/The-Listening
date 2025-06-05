@@ -18,7 +18,8 @@ public class TheListening : ModuleRules
 			"TheListening/Radio",
 			"TheListening/UI",
 			"TheListening/Anomaly",
-			"TheListening/Records"
+			"TheListening/Records",
+			"TheListening/Interactive"
 		});
 
 		// Uncomment if you are using Slate UI

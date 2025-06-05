@@ -7,7 +7,7 @@
 #include "TLPlayerController.generated.h"
 
 class UTLRadioWidget;
-class UTLRadio;
+class ATLRadio;
 class UTLRecordsWidget;
 class UTLRecordLog;
 
@@ -18,6 +18,8 @@ class THELISTENING_API ATLPlayerController : public APlayerController
 
 public:
     ATLPlayerController();
+
+    virtual void Tick(float DeltaTime) override;
 
     UFUNCTION(BlueprintCallable, Category = "Radio")
     void RecordCurrentSignal();
@@ -63,4 +65,10 @@ private:
     const float FrequencyStep = 0.1f;
     const float MinFrequency = 87.5f;
     const float MaxFrequency = 108.0f;
+
+    AActor* GetHoveredActor();
+
+    void HandleInput();
+
+    void TryInteract();
 };

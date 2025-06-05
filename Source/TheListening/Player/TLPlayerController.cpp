@@ -6,8 +6,10 @@
 #include "../Radio/TLRadio.h"
 #include "../Radio/TLRadioStation.h"
 #include "../Records/TLRecordLog.h"
+#include "../Interactive/TLInteractiveObject.h"
 #include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "DrawDebugHelpers.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogTLPlayerController, All, All);
 
@@ -15,6 +17,8 @@ ATLPlayerController::ATLPlayerController()
 {
     bShowMouseCursor = true;
     DefaultMouseCursor = EMouseCursor::Default;
+    bEnableClickEvents = true;
+    bEnableTouchEvents = true;
 }
 
 void ATLPlayerController::BeginPlay()
@@ -37,6 +41,13 @@ void ATLPlayerController::BeginPlay()
     }
 
     RadioLog = NewObject<UTLRecordLog>();
+}
+
+void ATLPlayerController::Tick(float DeltaTime) 
+{
+    Super::Tick(DeltaTime);
+
+    HandleInput();
 }
 
 void ATLPlayerController::SetupInputComponent()
@@ -115,5 +126,44 @@ void ATLPlayerController::CloseRecordLogUI()
     if (RecordsWidget)
     {
         RecordsWidget->SetVisibility(ESlateVisibility::Hidden);
+    }
+}
+
+AActor* ATLPlayerController::GetHoveredActor()
+{
+    if (!GetWorld()) return nullptr;
+
+    FHitResult Hit;
+    FVector Start, Dir, End;
+    DeprojectMousePositionToWorld(Start, Dir);
+    End = Start + Dir * 10000.0f;
+    
+    FCollisionQueryParams Params;
+    bool bHit = GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, Params);
+
+    DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 0.1f);
+
+    if (bHit && Hit.GetActor())
+    {
+        return Hit.GetActor();
+    }
+
+    return nullptr;
+}
+
+void ATLPlayerController::HandleInput() 
+{
+    if (WasInputKeyJustPressed(EKeys::LeftMouseButton))
+    {
+        TryInteract();
+    }
+}
+
+void ATLPlayerController::TryInteract() 
+{
+    AActor* HoveredActor = GetHoveredActor();
+    if (HoveredActor && HoveredActor->IsA<ATLInteractiveObject>())
+    {
+        Cast<ATLInteractiveObject>(HoveredActor)->OnInteract();
     }
 }
