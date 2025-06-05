@@ -40,9 +40,9 @@ void ATLPlayerController::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-        CheckHighlightActor();
+    CheckHighlightActor();
 
-        HandleInput();
+    HandleInput();
 }
 
 void ATLPlayerController::SetupInputComponent()
@@ -58,14 +58,20 @@ void ATLPlayerController::SetupInputComponent()
 
 void ATLPlayerController::OnIncreaseFrequency()
 {
-    CurrentFrequency = FMath::Clamp(CurrentFrequency + FrequencyStep, MinFrequency, MaxFrequency);
-    UpdateRadio();
+    if (RadioWidget && RadioWidget->IsInViewport())
+    {
+        CurrentFrequency = FMath::Clamp(CurrentFrequency + FrequencyStep, MinFrequency, MaxFrequency);
+        UpdateRadio();
+    }
 }
 
 void ATLPlayerController::OnDecreaseFrequency()
 {
-    CurrentFrequency = FMath::Clamp(CurrentFrequency - FrequencyStep, MinFrequency, MaxFrequency);
-    UpdateRadio();
+    if (RadioWidget && RadioWidget->IsInViewport())
+    {
+        CurrentFrequency = FMath::Clamp(CurrentFrequency - FrequencyStep, MinFrequency, MaxFrequency);
+        UpdateRadio();
+    }
 }
 
 void ATLPlayerController::UpdateRadio()
@@ -89,9 +95,16 @@ void ATLPlayerController::RecordCurrentSignal()
 {
     if (!Radio || !Radio->GetCurrentStation() || !RadioLog) return;
 
-    if (const auto CurrentStation = Radio->GetCurrentStation())
+    if (RadioWidget && RadioWidget->IsInViewport())
     {
-        RadioLog->AddRecord(CurrentStation->GetFrequency(), CurrentStation->GetMessage(), CurrentStation->GetIsAnomalous());
+        if (const auto CurrentStation = Radio->GetCurrentStation())
+        {
+            RadioLog->AddRecord(CurrentStation->GetFrequency(), CurrentStation->GetMessage(), CurrentStation->GetIsAnomalous());
+            if (RecordsWidget && RecordsWidget->IsInViewport())
+            {
+                RecordsWidget->SetRecordList(RadioLog->GetAllRecords());
+            }
+        }
     }
 }
 
@@ -109,7 +122,7 @@ void ATLPlayerController::OpenRecordLogUI()
             RecordsWidget->AddToViewport();
         }
 
-        //RecordsWidget->SetVisibility(ESlateVisibility::Visible);
+        RecordsWidget->SetVisibility(ESlateVisibility::Visible);
         RecordsWidget->SetRecordList(RadioLog->GetAllRecords());
     }
 }
@@ -118,8 +131,8 @@ void ATLPlayerController::CloseRecordLogUI()
 {
     if (RecordsWidget)
     {
-        //RecordsWidget->SetVisibility(ESlateVisibility::Hidden);
-        RecordsWidget->RemoveFromParent();
+        RecordsWidget->SetVisibility(ESlateVisibility::Hidden);
+        //RecordsWidget->RemoveFromParent();
     }
 }
 
