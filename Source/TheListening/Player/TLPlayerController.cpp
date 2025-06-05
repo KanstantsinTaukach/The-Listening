@@ -9,11 +9,10 @@
 #include "../Interactive/TLInteractiveObject.h"
 #include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "DrawDebugHelpers.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogTLPlayerController, All, All);
 
-ATLPlayerController::ATLPlayerController() 
+ATLPlayerController::ATLPlayerController()
 {
     bShowMouseCursor = true;
     bEnableClickEvents = true;
@@ -37,12 +36,13 @@ void ATLPlayerController::BeginPlay()
     Radio = Cast<ATLRadio>(UGameplayStatics::GetActorOfClass(GetWorld(), ATLRadio::StaticClass()));
 }
 
-void ATLPlayerController::Tick(float DeltaTime) 
+void ATLPlayerController::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-    HandleInput();
-    CheckHighlight();
+        CheckHighlightActor();
+
+        HandleInput();
 }
 
 void ATLPlayerController::SetupInputComponent()
@@ -62,19 +62,19 @@ void ATLPlayerController::OnIncreaseFrequency()
     UpdateRadio();
 }
 
-void ATLPlayerController::OnDecreaseFrequency() 
+void ATLPlayerController::OnDecreaseFrequency()
 {
     CurrentFrequency = FMath::Clamp(CurrentFrequency - FrequencyStep, MinFrequency, MaxFrequency);
     UpdateRadio();
 }
 
-void ATLPlayerController::UpdateRadio() 
+void ATLPlayerController::UpdateRadio()
 {
-    if (!Radio) return;
+    if (!Radio || !RadioAudioComponent) return;
 
     Radio->FindStation(CurrentFrequency);
     Radio->PlayCurrentStation(RadioAudioComponent);
-   
+
     if (RadioWidget && RadioWidget->IsInViewport())
     {
         if (const auto Station = Radio->GetCurrentStation())
@@ -86,7 +86,7 @@ void ATLPlayerController::UpdateRadio()
 }
 
 void ATLPlayerController::RecordCurrentSignal()
-{    
+{
     if (!Radio || !Radio->GetCurrentStation() || !RadioLog) return;
 
     if (const auto CurrentStation = Radio->GetCurrentStation())
@@ -109,20 +109,21 @@ void ATLPlayerController::OpenRecordLogUI()
             RecordsWidget->AddToViewport();
         }
 
-        RecordsWidget->SetVisibility(ESlateVisibility::Visible);
+        //RecordsWidget->SetVisibility(ESlateVisibility::Visible);
         RecordsWidget->SetRecordList(RadioLog->GetAllRecords());
     }
 }
 
-void ATLPlayerController::CloseRecordLogUI() 
+void ATLPlayerController::CloseRecordLogUI()
 {
     if (RecordsWidget)
     {
-        RecordsWidget->SetVisibility(ESlateVisibility::Hidden);
+        //RecordsWidget->SetVisibility(ESlateVisibility::Hidden);
+        RecordsWidget->RemoveFromParent();
     }
 }
 
-void ATLPlayerController::OpenRadioUI() 
+void ATLPlayerController::OpenRadioUI()
 {
     if (!RadioWidget && RadioWidgetClass)
     {
@@ -140,7 +141,7 @@ void ATLPlayerController::OpenRadioUI()
     }
 }
 
-void ATLPlayerController::CloseRadioUI() 
+void ATLPlayerController::CloseRadioUI()
 {
     if (RadioWidget)
     {
@@ -156,11 +157,9 @@ AActor* ATLPlayerController::GetHoveredActor()
     FVector Start, Dir, End;
     DeprojectMousePositionToWorld(Start, Dir);
     End = Start + Dir * 10000.0f;
-    
+
     FCollisionQueryParams Params;
     bool bHit = GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, Params);
-
-    DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 0.1f);
 
     if (bHit && Hit.GetActor())
     {
@@ -170,7 +169,7 @@ AActor* ATLPlayerController::GetHoveredActor()
     return nullptr;
 }
 
-void ATLPlayerController::HandleInput() 
+void ATLPlayerController::HandleInput()
 {
     if (WasInputKeyJustPressed(EKeys::LeftMouseButton))
     {
@@ -178,7 +177,7 @@ void ATLPlayerController::HandleInput()
     }
 }
 
-void ATLPlayerController::TryInteract() 
+void ATLPlayerController::TryInteract()
 {
     AActor* HoveredActor = GetHoveredActor();
     if (HoveredActor && HoveredActor->IsA<ATLInteractiveObject>())
@@ -187,11 +186,26 @@ void ATLPlayerController::TryInteract()
     }
 }
 
-void ATLPlayerController::CheckHighlight() 
+void ATLPlayerController::CheckHighlightActor()
 {
     AActor* HoveredActor = GetHoveredActor();
+
+    static AActor* LastHoveredActor = nullptr;
+
+    if (LastHoveredActor && LastHoveredActor != HoveredActor)
+    {
+        if (LastHoveredActor->IsA<ATLInteractiveObject>())
+        {
+            Cast<ATLInteractiveObject>(LastHoveredActor)->Highlight(false);
+        }
+    }
     if (HoveredActor && HoveredActor->IsA<ATLInteractiveObject>())
     {
         Cast<ATLInteractiveObject>(HoveredActor)->Highlight(true);
+        LastHoveredActor = HoveredActor;
+    }
+    else
+    {
+        LastHoveredActor = nullptr;
     }
 }

@@ -80,5 +80,5 @@ private:
 
     void TryInteract();
 
-    void CheckHighlight();
+    void CheckHighlightActor();
 };

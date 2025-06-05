@@ -12,11 +12,45 @@ ATLInteractiveObject::ATLInteractiveObject()
     RootComponent = MeshComponent;
 }
 
+void ATLInteractiveObject::BeginPlay()
+{
+    Super::BeginPlay();
+
+    if (MeshComponent && HighlightMaterial)
+    {
+        for (int32 i = 0; i < MeshComponent->GetNumMaterials(); ++i)
+        {
+            OriginalMaterials.Add(MeshComponent->GetMaterial(i));
+        }
+    }
+}
+
 void ATLInteractiveObject::Highlight(bool bEnable) 
 {
-    FString bEnableStr = FString(bEnable ? "Highlight ON" : "Highlight OFF");
-    FString Str = FString::Printf(TEXT("%s"), *bEnableStr);
-    UE_LOG(LogTLInteractiveObject, Log, TEXT("%s"), *Str);
+    if (!MeshComponent || !HighlightMaterial) return;
+
+    if (bEnable)
+    {
+        DynamicMaterials.Empty();
+
+        const int32 NumMaterials = MeshComponent->GetNumMaterials();
+        if (NumMaterials == 0) return;
+
+        for (int32 i = 0; i < NumMaterials; ++i)
+        {
+            UMaterialInstanceDynamic* DynMaterial = UMaterialInstanceDynamic::Create(HighlightMaterial, this);
+            DynamicMaterials.Add(DynMaterial);
+            MeshComponent->SetMaterial(i, DynMaterial);
+        }
+    }
+    else
+    {
+        for (int32 i = 0; i < OriginalMaterials.Num(); ++i)
+        {
+            MeshComponent->SetMaterial(i, OriginalMaterials[i]);
+        }
+        DynamicMaterials.Empty();
+    }
 }
 
 void ATLInteractiveObject::OnInteract_Implementation() 

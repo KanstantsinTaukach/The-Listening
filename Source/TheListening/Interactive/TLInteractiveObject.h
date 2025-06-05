@@ -25,4 +25,15 @@ public:
 protected:
     UPROPERTY(EditAnywhere, Category = "Interaction")
     UStaticMeshComponent* MeshComponent;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Highlight", meta = (DisplayName = "Highlight Material"))
+    UMaterialInterface* HighlightMaterial;
+
+    UPROPERTY()
+    TArray<UMaterialInstanceDynamic*> DynamicMaterials;
+
+    UPROPERTY()
+    TArray<UMaterialInterface*> OriginalMaterials;
+
+    virtual void BeginPlay() override;
 };
