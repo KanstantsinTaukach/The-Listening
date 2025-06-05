@@ -32,7 +32,7 @@ protected:
 
 public:
     UFUNCTION(BlueprintCallable, Category = "Records")
-    void AddRecord(float InFrequency, const FString& InMessage, float InTime, bool InbIsAnomalous);
+    void AddRecord(float InFrequency, const FString& InMessage, bool InbIsAnomalous);
 
     UFUNCTION(BlueprintCallable, Category = "Records")
     TArray<FSignalRecord> GetAllRecords() const { return Records; };

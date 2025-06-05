@@ -26,26 +26,23 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "UI")
     void OpenRecordLogUI();
-
     UFUNCTION(BlueprintCallable, Category = "UI")
     void CloseRecordLogUI();
+
+    UFUNCTION(BlueprintCallable, Category = "UI")
+    void OpenRadioUI();
+    UFUNCTION(BlueprintCallable, Category = "UI")
+    void CloseRadioUI();
 
 protected:
     UPROPERTY(EditAnywhere, Category = "UI")
     TSubclassOf<UUserWidget> RadioWidgetClass;
-    UPROPERTY()
-    UTLRadioWidget* RadioWidget;
-
-    UPROPERTY()
-    UAudioComponent* RadioAudioComponent;
 
     UPROPERTY(EditAnywhere, Category = "UI")
     TSubclassOf<UUserWidget> RecordWidgetClass;
-    UPROPERTY()
-    UTLRecordsWidget* RecordsWidget;
 
     UPROPERTY()
-    UTLRecordLog* RadioLog;
+    UAudioComponent* RadioAudioComponent;
 
     UFUNCTION(BlueprintCallable, Category = "Input")
     void OnIncreaseFrequency();
@@ -66,9 +63,22 @@ private:
     const float MinFrequency = 87.5f;
     const float MaxFrequency = 108.0f;
 
+    UPROPERTY()
+    UTLRadioWidget* RadioWidget;
+    UPROPERTY()
+    UTLRecordsWidget* RecordsWidget;
+
+    UPROPERTY()
+    UTLRecordLog* RadioLog;
+
+    UPROPERTY()
+    ATLRadio* Radio;
+
     AActor* GetHoveredActor();
 
     void HandleInput();
 
     void TryInteract();
+
+    void CheckHighlight();
 };

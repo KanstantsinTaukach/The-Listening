@@ -2,7 +2,7 @@
 
 #include "TLRecordLog.h"
 
-void UTLRecordLog::AddRecord(float InFrequency, const FString& InMessage, float InTime, bool InbIsAnomalous) 
+void UTLRecordLog::AddRecord(float InFrequency, const FString& InMessage, bool InbIsAnomalous) 
 {
     for (const FSignalRecord& ExistingRecord : Records)
     {

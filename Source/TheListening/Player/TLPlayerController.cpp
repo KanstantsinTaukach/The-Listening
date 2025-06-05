@@ -16,23 +16,17 @@ DEFINE_LOG_CATEGORY_STATIC(LogTLPlayerController, All, All);
 ATLPlayerController::ATLPlayerController() 
 {
     bShowMouseCursor = true;
-    DefaultMouseCursor = EMouseCursor::Default;
     bEnableClickEvents = true;
     bEnableTouchEvents = true;
+
+    DefaultMouseCursor = EMouseCursor::Default;
+
+    RadioLog = CreateDefaultSubobject<UTLRecordLog>(TEXT("RadioLog"));
 }
 
 void ATLPlayerController::BeginPlay()
 {
     Super::BeginPlay();
-
-    if (RadioWidgetClass)
-    {
-        RadioWidget = CreateWidget<UTLRadioWidget>(this, RadioWidgetClass);
-        if (RadioWidget)
-        {
-            RadioWidget->AddToViewport();
-        }
-    }
 
     const auto ControllerPawn = GetPawn();
     if (ControllerPawn)
@@ -40,7 +34,7 @@ void ATLPlayerController::BeginPlay()
         RadioAudioComponent = ControllerPawn->FindComponentByClass<UAudioComponent>();
     }
 
-    RadioLog = NewObject<UTLRecordLog>();
+    Radio = Cast<ATLRadio>(UGameplayStatics::GetActorOfClass(GetWorld(), ATLRadio::StaticClass()));
 }
 
 void ATLPlayerController::Tick(float DeltaTime) 
@@ -48,6 +42,7 @@ void ATLPlayerController::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
 
     HandleInput();
+    CheckHighlight();
 }
 
 void ATLPlayerController::SetupInputComponent()
@@ -59,8 +54,6 @@ void ATLPlayerController::SetupInputComponent()
     InputComponent->BindAction("IncreaseFrequency", IE_Pressed, this, &ATLPlayerController::OnIncreaseFrequency);
     InputComponent->BindAction("DecreaseFrequency", IE_Pressed, this, &ATLPlayerController::OnDecreaseFrequency);
     InputComponent->BindAction("RecordSignal", IE_Pressed, this, &ATLPlayerController::RecordCurrentSignal);
-    InputComponent->BindAction("OpenRecords", IE_Pressed, this, &ATLPlayerController::OpenRecordLogUI);
-    InputComponent->BindAction("CloseRecords", IE_Pressed, this, &ATLPlayerController::CloseRecordLogUI);
 }
 
 void ATLPlayerController::OnIncreaseFrequency()
@@ -77,34 +70,34 @@ void ATLPlayerController::OnDecreaseFrequency()
 
 void ATLPlayerController::UpdateRadio() 
 {
-    auto Radio = Cast<ATLRadio>(UGameplayStatics::GetActorOfClass(GetWorld(), ATLRadio::StaticClass()));
+    if (!Radio) return;
+
     Radio->FindStation(CurrentFrequency);
     Radio->PlayCurrentStation(RadioAudioComponent);
    
-    if (RadioWidget)
+    if (RadioWidget && RadioWidget->IsInViewport())
     {
-        RadioWidget->UpdateMessageDisplay(Radio->GetCurrentStation()->GetMessage());
-        RadioWidget->UpdateFrequencyDisplay(CurrentFrequency);
+        if (const auto Station = Radio->GetCurrentStation())
+        {
+            RadioWidget->UpdateMessageDisplay(Station->GetMessage());
+            RadioWidget->UpdateFrequencyDisplay(CurrentFrequency);
+        }
     }
 }
 
 void ATLPlayerController::RecordCurrentSignal()
-{
-    const auto Radio = Cast<ATLRadio>(UGameplayStatics::GetActorOfClass(GetWorld(), ATLRadio::StaticClass()));
-    if (!GetWorld() || !Radio || !Radio->GetCurrentStation() || !RadioLog) return;
+{    
+    if (!Radio || !Radio->GetCurrentStation() || !RadioLog) return;
 
-    float Time = GetWorld()->GetTimeSeconds();
     if (const auto CurrentStation = Radio->GetCurrentStation())
     {
-        RadioLog->AddRecord(CurrentStation->GetFrequency(), CurrentStation->GetMessage(), Time, CurrentStation->GetIsAnomalous());
+        RadioLog->AddRecord(CurrentStation->GetFrequency(), CurrentStation->GetMessage(), CurrentStation->GetIsAnomalous());
     }
 }
 
 void ATLPlayerController::OpenRecordLogUI()
 {
-    if (!RecordWidgetClass) return;
-
-    if (!RecordsWidget)
+    if (!RecordsWidget && RecordWidgetClass)
     {
         RecordsWidget = CreateWidget<UTLRecordsWidget>(this, RecordWidgetClass);
     }
@@ -126,6 +119,32 @@ void ATLPlayerController::CloseRecordLogUI()
     if (RecordsWidget)
     {
         RecordsWidget->SetVisibility(ESlateVisibility::Hidden);
+    }
+}
+
+void ATLPlayerController::OpenRadioUI() 
+{
+    if (!RadioWidget && RadioWidgetClass)
+    {
+        RadioWidget = CreateWidget<UTLRadioWidget>(this, RadioWidgetClass);
+    }
+
+    if (RadioWidget)
+    {
+        if (!RadioWidget->IsInViewport())
+        {
+            RadioWidget->AddToViewport();
+        }
+
+        RadioWidget->SetVisibility(ESlateVisibility::Visible);
+    }
+}
+
+void ATLPlayerController::CloseRadioUI() 
+{
+    if (RadioWidget)
+    {
+        RadioWidget->SetVisibility(ESlateVisibility::Hidden);
     }
 }
 
@@ -165,5 +184,14 @@ void ATLPlayerController::TryInteract()
     if (HoveredActor && HoveredActor->IsA<ATLInteractiveObject>())
     {
         Cast<ATLInteractiveObject>(HoveredActor)->OnInteract();
+    }
+}
+
+void ATLPlayerController::CheckHighlight() 
+{
+    AActor* HoveredActor = GetHoveredActor();
+    if (HoveredActor && HoveredActor->IsA<ATLInteractiveObject>())
+    {
+        Cast<ATLInteractiveObject>(HoveredActor)->Highlight(true);
     }
 }
