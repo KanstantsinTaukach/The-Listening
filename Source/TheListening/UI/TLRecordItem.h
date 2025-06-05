@@ -7,6 +7,8 @@
 #include "../Records/TLRecordLog.h"
 #include "TLRecordItem.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRecordItemSelectedSignature, FSignalRecord, SelectedRecord);
+
 class UTextBlock;
 class UImage;
 
@@ -16,6 +18,8 @@ class THELISTENING_API UTLRecordItem : public UUserWidget
     GENERATED_BODY()
 
 protected:
+    FSignalRecord RecordData;
+
     UPROPERTY(meta = (BindWidget))
     UTextBlock* FrequencyLabel;
 
@@ -26,6 +30,12 @@ protected:
     UImage* AnomalyIndicatorImage;
 
 public:
+    UPROPERTY(BlueprintAssignable, Category = "Events")
+    FOnRecordItemSelectedSignature OnRecordItemSelected;
+
     UFUNCTION(BlueprintCallable)
     void SetRecordData(const FSignalRecord& Record);
+
+    UFUNCTION(BlueprintCallable, Category = "UI")
+    void OnListItemClicked();
 };

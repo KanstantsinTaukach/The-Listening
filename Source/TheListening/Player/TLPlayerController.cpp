@@ -86,11 +86,6 @@ void ATLPlayerController::RecordCurrentSignal()
     if (const auto CurrentStation = Radio->GetCurrentStation())
     {
         RadioLog->AddRecord(CurrentStation->GetFrequency(), CurrentStation->GetMessage(), Time, CurrentStation->GetIsAnomalous());
-
-        /*if (RecordsWidget)
-        {
-            RecordsWidget->SetRecordList(RadioLog->GetAllRecords());
-        }*/
     }
 }
 

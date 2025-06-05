@@ -18,9 +18,6 @@ struct FSignalRecord
     FString Message;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Record")
-    float Time;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Record")
     bool bIsAnomalous;
 };
 

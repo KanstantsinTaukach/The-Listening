@@ -26,9 +26,6 @@ protected:
     UTextBlock* MessageText;
 
     UPROPERTY(meta = (BindWidget))
-    UTextBlock* TimeText;
-
-    UPROPERTY(meta = (BindWidget))
     UTextBlock* AnomalyStatusText;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")

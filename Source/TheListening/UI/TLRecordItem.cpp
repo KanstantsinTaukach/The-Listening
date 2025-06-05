@@ -13,11 +13,19 @@ void UTLRecordItem::SetRecordData(const FSignalRecord& Record)
 
     if (MessagePreview)
     {
-        MessagePreview->SetText(FText::FromString(Record.Message.Left(30) + "..."));
+        FString Preview = Record.Message.Left(30) + (Record.Message.Len() > 40 ? TEXT("...") : TEXT(""));
+        MessagePreview->SetText(FText::FromString(Preview));
     }
 
     if (AnomalyIndicatorImage)
     {
         AnomalyIndicatorImage->SetVisibility(Record.bIsAnomalous ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
     }
+
+    RecordData = Record;
+}
+
+void UTLRecordItem::OnListItemClicked() 
+{
+    OnRecordItemSelected.Broadcast(RecordData);
 }

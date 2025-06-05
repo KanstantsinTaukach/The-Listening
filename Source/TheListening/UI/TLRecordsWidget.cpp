@@ -18,6 +18,8 @@ void UTLRecordsWidget::SetRecordList(const TArray<FSignalRecord>& Records)
         if (RecordItem && RecordListView)
         {
             RecordItem->SetRecordData(Record);
+            RecordItem->OnRecordItemSelected.AddDynamic(this, &UTLRecordsWidget::OnRecordSelected);
+
             RecordListView->AddChild(RecordItem);
         }
     }
@@ -33,11 +35,6 @@ void UTLRecordsWidget::OnRecordSelected(FSignalRecord SelectedRecord)
     if (MessageText)
     {
         MessageText->SetText(FText::FromString(SelectedRecord.Message));
-    }
-
-    if (TimeText)
-    {
-        TimeText->SetText(FText::AsNumber(SelectedRecord.Time));
     }
 
     if (AnomalyStatusText)
