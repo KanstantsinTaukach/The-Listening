@@ -11,6 +11,7 @@ void ATLGameHUD::BeginPlay()
     Super::BeginPlay();
 
     GameWidgets.Add(ETLMatchState::Pause, CreateWidget<UUserWidget>(GetWorld(), PauseWidgetClass));
+    GameWidgets.Add(ETLMatchState::GameOver, CreateWidget<UUserWidget>(GetWorld(), GameOverWidgetClass));
 
     for (auto GameWidgetPair : GameWidgets)
     {

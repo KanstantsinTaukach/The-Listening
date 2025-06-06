@@ -15,6 +15,8 @@ class THELISTENING_API ATLGameHUD : public AHUD
 protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
     TSubclassOf<UUserWidget> PauseWidgetClass;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+    TSubclassOf<UUserWidget> GameOverWidgetClass;
 
     virtual void BeginPlay() override;
 
