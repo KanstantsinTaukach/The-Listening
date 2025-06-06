@@ -29,3 +29,29 @@ void ATLGameModeBase::SetMatchState(ETLMatchState State)
     MatchState = State;
     OnMatchStateChanged.Broadcast(MatchState);
 }
+
+bool ATLGameModeBase::SetPause(APlayerController* PC, FCanUnpause CanUnpauseDelegate)
+{
+    if (MatchState != ETLMatchState::InProgress) return false;
+
+    const bool PauseSet = Super::SetPause(PC, CanUnpauseDelegate);
+    if (PauseSet)
+    {
+        SetMatchState(ETLMatchState::Pause);
+    }
+
+    return PauseSet;
+}
+
+bool ATLGameModeBase::ClearPause()
+{
+    if (MatchState != ETLMatchState::Pause) return false;
+
+    const bool PauseCleared = Super::ClearPause();
+    if (PauseCleared)
+    {
+        SetMatchState(ETLMatchState::InProgress);
+    }
+
+    return PauseCleared;
+}

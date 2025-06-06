@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "../Lib/TLCoreTypes.h"
 #include "TLPlayerController.generated.h"
 
 class UTLRadioWidget;
@@ -37,7 +38,6 @@ public:
 protected:
     UPROPERTY(EditAnywhere, Category = "UI")
     TSubclassOf<UUserWidget> RadioWidgetClass;
-
     UPROPERTY(EditAnywhere, Category = "UI")
     TSubclassOf<UUserWidget> RecordWidgetClass;
 
@@ -46,7 +46,6 @@ protected:
 
     UFUNCTION(BlueprintCallable, Category = "Input")
     void OnIncreaseFrequency();
-
     UFUNCTION(BlueprintCallable, Category = "Input")
     void OnDecreaseFrequency();
 
@@ -54,7 +53,6 @@ protected:
     void UpdateRadio();
 
     virtual void BeginPlay() override;
-
     virtual void SetupInputComponent() override;
 
 private:
@@ -62,6 +60,8 @@ private:
     const float FrequencyStep = 0.1f;
     const float MinFrequency = 87.5f;
     const float MaxFrequency = 108.0f;
+
+    ETLMatchState CurrentMatchState = ETLMatchState::InProgress;
 
     UPROPERTY()
     UTLRadioWidget* RadioWidget;
@@ -77,8 +77,9 @@ private:
     AActor* GetHoveredActor();
 
     void HandleInput();
-
     void TryInteract();
-
     void CheckHighlightActor();
+
+    void OnPauseGame();
+    void OnMatchStateChanged(ETLMatchState State);
 };

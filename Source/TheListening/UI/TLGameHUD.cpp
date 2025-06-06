@@ -2,12 +2,24 @@
 
 #include "TLGameHUD.h"
 #include "../Game/TLGameModeBase.h"
+#include "Blueprint/UserWidget.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogTLGameHUD, All, All);
 
 void ATLGameHUD::BeginPlay() 
 {
     Super::BeginPlay();
+
+    GameWidgets.Add(ETLMatchState::Pause, CreateWidget<UUserWidget>(GetWorld(), PauseWidgetClass));
+
+    for (auto GameWidgetPair : GameWidgets)
+    {
+        const auto GameWidget = GameWidgetPair.Value;
+        if (!GameWidget) continue;
+
+        GameWidget->AddToViewport();
+        GameWidget->SetVisibility(ESlateVisibility::Hidden);
+    }
 
     if (GetWorld())
     {
@@ -21,5 +33,16 @@ void ATLGameHUD::BeginPlay()
 
 void ATLGameHUD::OnMatchStateChanged(ETLMatchState State) 
 {
+    if (CurrentWidget)
+    {
+        CurrentWidget->SetVisibility(ESlateVisibility::Hidden);
+    }
+
+    if (GameWidgets.Contains(State))
+    {
+        CurrentWidget = GameWidgets[State];
+        CurrentWidget->SetVisibility(ESlateVisibility::Visible);
+    }
+
     UE_LOG(LogTLGameHUD, Display, TEXT("Match state changed: %s"), *UEnum::GetValueAsString(State));
 }

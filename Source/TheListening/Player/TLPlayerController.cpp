@@ -9,6 +9,7 @@
 #include "../Interactive/TLInteractiveObject.h"
 #include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "../Game/TLGameModeBase.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogTLPlayerController, All, All);
 
@@ -27,6 +28,15 @@ void ATLPlayerController::BeginPlay()
 {
     Super::BeginPlay();
 
+    if (GetWorld())
+    {
+        if (const auto GameMode = Cast<ATLGameModeBase>(GetWorld()->GetAuthGameMode()))
+        {
+            GameMode->OnMatchStateChanged.AddUObject(this, &ATLPlayerController::OnMatchStateChanged);
+            CurrentMatchState = GameMode->GetMatchState();
+        }
+    }
+
     const auto ControllerPawn = GetPawn();
     if (ControllerPawn)
     {
@@ -39,6 +49,8 @@ void ATLPlayerController::BeginPlay()
 void ATLPlayerController::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
+
+    if (CurrentMatchState != ETLMatchState::InProgress) return;
 
     CheckHighlightActor();
 
@@ -54,10 +66,13 @@ void ATLPlayerController::SetupInputComponent()
     InputComponent->BindAction("IncreaseFrequency", IE_Pressed, this, &ATLPlayerController::OnIncreaseFrequency);
     InputComponent->BindAction("DecreaseFrequency", IE_Pressed, this, &ATLPlayerController::OnDecreaseFrequency);
     InputComponent->BindAction("RecordSignal", IE_Pressed, this, &ATLPlayerController::RecordCurrentSignal);
+    InputComponent->BindAction("PauseGame", IE_Pressed, this, &ATLPlayerController::OnPauseGame);
 }
 
 void ATLPlayerController::OnIncreaseFrequency()
 {
+    if (CurrentMatchState != ETLMatchState::InProgress) return;
+
     if (RadioWidget && RadioWidget->IsInViewport())
     {
         CurrentFrequency = FMath::Clamp(CurrentFrequency + FrequencyStep, MinFrequency, MaxFrequency);
@@ -67,6 +82,8 @@ void ATLPlayerController::OnIncreaseFrequency()
 
 void ATLPlayerController::OnDecreaseFrequency()
 {
+    if (CurrentMatchState != ETLMatchState::InProgress) return;
+
     if (RadioWidget && RadioWidget->IsInViewport())
     {
         CurrentFrequency = FMath::Clamp(CurrentFrequency - FrequencyStep, MinFrequency, MaxFrequency);
@@ -93,6 +110,8 @@ void ATLPlayerController::UpdateRadio()
 
 void ATLPlayerController::RecordCurrentSignal()
 {
+    if (CurrentMatchState != ETLMatchState::InProgress) return;
+
     if (!Radio || !Radio->GetCurrentStation() || !RadioLog) return;
 
     if (RadioWidget && RadioWidget->IsInViewport())
@@ -132,7 +151,6 @@ void ATLPlayerController::CloseRecordLogUI()
     if (RecordsWidget)
     {
         RecordsWidget->SetVisibility(ESlateVisibility::Hidden);
-        //RecordsWidget->RemoveFromParent();
     }
 }
 
@@ -192,6 +210,8 @@ void ATLPlayerController::HandleInput()
 
 void ATLPlayerController::TryInteract()
 {
+    if (CurrentMatchState != ETLMatchState::InProgress) return;
+
     AActor* HoveredActor = GetHoveredActor();
     if (HoveredActor && HoveredActor->IsA<ATLInteractiveObject>())
     {
@@ -220,5 +240,29 @@ void ATLPlayerController::CheckHighlightActor()
     else
     {
         LastHoveredActor = nullptr;
+    }
+}
+
+void ATLPlayerController::OnPauseGame()
+{
+    if (!GetWorld() || !GetWorld()->GetAuthGameMode()) return;
+
+    GetWorld()->GetAuthGameMode()->SetPause(this);
+}
+
+void ATLPlayerController::OnMatchStateChanged(ETLMatchState State) 
+{
+    CurrentMatchState = State;
+
+    if (State == ETLMatchState::Pause)
+    {
+        SetInputMode(FInputModeUIOnly());
+
+        CloseRadioUI();
+        CloseRecordLogUI();
+    }
+    else
+    {
+        SetInputMode(FInputModeGameAndUI());
     }
 }

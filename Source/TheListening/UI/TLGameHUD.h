@@ -13,8 +13,17 @@ class THELISTENING_API ATLGameHUD : public AHUD
     GENERATED_BODY()
 
 protected:
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+    TSubclassOf<UUserWidget> PauseWidgetClass;
+
     virtual void BeginPlay() override;
 
 private:
+    UPROPERTY()
+    TMap<ETLMatchState, UUserWidget*> GameWidgets;
+
+    UPROPERTY()
+    UUserWidget* CurrentWidget = nullptr;
+
     void OnMatchStateChanged(ETLMatchState State);
 };
