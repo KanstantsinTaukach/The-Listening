@@ -9,6 +9,7 @@
 class UTextBlock;
 class UButton;
 class USlider;
+class USoundBase;
 
 UCLASS()
 class THELISTENING_API UTLRadioWidget : public UUserWidget
@@ -22,6 +23,9 @@ protected:
     UPROPERTY(meta = (BindWidget))
     UTextBlock* MessageText;
 
+    UPROPERTY(meta = (BindWidget))
+    UTextBlock* MessageRecordSuccessText;
+
     UPROPERTY(meta = (Bindwidget))
     UButton* RecordButton;
 
@@ -30,6 +34,9 @@ protected:
 
     UPROPERTY(meta = (BindWidget))
     USlider* FrequencySlider;
+
+    UPROPERTY(EditAnywhere, Category = "Audio")
+    USoundBase* RecordSound;
 
     virtual void NativeOnInitialized() override;
 
@@ -48,4 +55,10 @@ public:
 
     UFUNCTION()
     void OnFrequencySliderValueChanged(float Value);
+
+    UFUNCTION()
+    void ShowRecordFeedback();
+
+    UFUNCTION()
+    void SetMessageRecordSuccessText(bool bSuccess);
 };

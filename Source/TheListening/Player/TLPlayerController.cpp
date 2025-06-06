@@ -118,12 +118,19 @@ void ATLPlayerController::RecordCurrentSignal()
     {
         if (const auto CurrentStation = Radio->GetCurrentStation())
         {
-            RadioLog->AddRecord(CurrentStation->GetFrequency(), CurrentStation->GetMessage(), CurrentStation->GetIsAnomalous());
-            if (RecordsWidget && RecordsWidget->IsInViewport())
+            if (CurrentStation->GetCanRecord())
             {
-                RecordsWidget->SetRecordList(RadioLog->GetAllRecords());
+                RadioLog->AddRecord(CurrentStation->GetFrequency(), CurrentStation->GetMessage(), CurrentStation->GetIsAnomalous());
+                if (RecordsWidget && RecordsWidget->IsInViewport())
+                {
+                    RecordsWidget->SetRecordList(RadioLog->GetAllRecords());
+                }
             }
+
+            RadioWidget->SetMessageRecordSuccessText(CurrentStation->GetCanRecord());
         }
+        
+        RadioWidget->ShowRecordFeedback();
     }
 }
 

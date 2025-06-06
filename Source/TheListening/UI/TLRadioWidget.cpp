@@ -5,6 +5,9 @@
 #include "Components/Button.h"
 #include "Components/Slider.h"
 #include "../Player/TLPlayerController.h"
+#include "Sound/SoundBase.h"
+#include "Kismet/GameplayStatics.h"
+#include "TimerManager.h"
 
 void UTLRadioWidget::NativeOnInitialized()
 {
@@ -69,4 +72,27 @@ void UTLRadioWidget::OnFrequencySliderValueChanged(float Value)
         PC->SetCurrentFrequency(NewFrequencty);
         PC->UpdateRadio();
     }
+}
+
+void UTLRadioWidget::ShowRecordFeedback()
+{
+    if (RecordSound && GetWorld())
+    {
+        UGameplayStatics::PlaySound2D(GetWorld(), RecordSound);
+    }
+
+    if (MessageRecordSuccessText)
+    {
+        MessageRecordSuccessText->SetVisibility(ESlateVisibility::Visible);
+    }
+
+    FTimerHandle TimerHandle;
+    GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]() { MessageRecordSuccessText->SetVisibility(ESlateVisibility::Hidden); }, 1.0f, false);
+}
+
+void UTLRadioWidget::SetMessageRecordSuccessText(bool bSuccess)
+{
+    MessageRecordSuccessText->SetText(bSuccess ? FText::FromString("Success") : FText::FromString("Error"));
+
+    bSuccess ? MessageRecordSuccessText->SetColorAndOpacity(FColor::Green) : MessageRecordSuccessText->SetColorAndOpacity(FColor::Red);
 }

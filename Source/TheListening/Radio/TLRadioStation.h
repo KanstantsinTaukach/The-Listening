@@ -28,6 +28,9 @@ public:
     UFUNCTION()
     bool GetIsAnomalous() const { return bIsAnomalous; };
 
+    UFUNCTION()
+    bool GetCanRecord() const { return bCanRecord; };
+
 protected:
     UPROPERTY(EditAnywhere, Category = "Station settings | Radio", meta = (ClampMin = "87.5", ClampMax = "108", Delta = "0.1"))
     float Frequency;
@@ -40,6 +43,9 @@ protected:
 
     UPROPERTY(EditAnywhere, Category = "Station settings | Flags")
     bool bIsAnomalous;
+
+    UPROPERTY(EditAnywhere, Category = "Station settings | Flags")
+    bool bCanRecord;
 
     virtual void BeginPlay() override;
 };
