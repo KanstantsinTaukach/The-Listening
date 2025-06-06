@@ -9,6 +9,7 @@
 
 class UTextBlock;
 class UVerticalBox;
+class UButton;
 
 UCLASS()
 class THELISTENING_API UTLRecordsWidget : public UUserWidget
@@ -31,7 +32,12 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
     TSubclassOf<UUserWidget> RecordItemClass;
 
+    UPROPERTY(meta = (BindWidget))
+    UButton* CloseButton;
+
     TArray<FSignalRecord> RecordList;
+
+    virtual void NativeOnInitialized() override;
 
 public:
     UFUNCTION(BlueprintCallable)
@@ -39,4 +45,7 @@ public:
 
     UFUNCTION()
     void OnRecordSelected(FSignalRecord SelectedRecord);
+
+    UFUNCTION()
+    void OnCloseButtonClicked();
 };

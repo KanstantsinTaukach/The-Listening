@@ -2,7 +2,7 @@
 
 #include "TLGameOverWidget.h"
 
-bool UTLGameOverWidget::Initialize()
+void UTLGameOverWidget::NativeOnInitialized()
 {
-    return Super::Initialize();
+    Super::NativeOnInitialized();
 }

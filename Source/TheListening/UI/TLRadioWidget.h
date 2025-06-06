@@ -8,6 +8,7 @@
 
 class UTextBlock;
 class UButton;
+class USlider;
 
 UCLASS()
 class THELISTENING_API UTLRadioWidget : public UUserWidget
@@ -24,6 +25,14 @@ protected:
     UPROPERTY(meta = (Bindwidget))
     UButton* RecordButton;
 
+    UPROPERTY(meta = (BindWidget))
+    UButton* CloseButton;
+
+    UPROPERTY(meta = (BindWidget))
+    USlider* FrequencySlider;
+
+    virtual void NativeOnInitialized() override;
+
 public:
     UFUNCTION(BlueprintCallable)
     void UpdateFrequencyDisplay(const float TargetFrequency);
@@ -33,4 +42,10 @@ public:
 
     UFUNCTION()
     void OnRecordButtonClicked();
+
+    UFUNCTION()
+    void OnCloseButtonClicked();
+
+    UFUNCTION()
+    void OnFrequencySliderValueChanged(float Value);
 };

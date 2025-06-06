@@ -11,6 +11,6 @@ class THELISTENING_API UTLGameOverWidget : public UUserWidget
 {
     GENERATED_BODY()
 
-public:
-    virtual bool Initialize() override;
+protected:
+    virtual void NativeOnInitialized() override;
 };

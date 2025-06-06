@@ -25,6 +25,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Radio")
     void RecordCurrentSignal();
 
+    UFUNCTION(BlueprintCallable, Category = "Radio")
+    void SetCurrentFrequency(float NewFrequency) { CurrentFrequency = NewFrequency; };
+
     UFUNCTION(BlueprintCallable, Category = "UI")
     void OpenRecordLogUI();
     UFUNCTION(BlueprintCallable, Category = "UI")
@@ -34,6 +37,9 @@ public:
     void OpenRadioUI();
     UFUNCTION(BlueprintCallable, Category = "UI")
     void CloseRadioUI();
+
+    UFUNCTION(BlueprintCallable, Category = "Radio")
+    void UpdateRadio();
 
 protected:
     UPROPERTY(EditAnywhere, Category = "UI")
@@ -48,9 +54,6 @@ protected:
     void OnIncreaseFrequency();
     UFUNCTION(BlueprintCallable, Category = "Input")
     void OnDecreaseFrequency();
-
-    UFUNCTION(BlueprintCallable, Category = "Radio")
-    void UpdateRadio();
 
     virtual void BeginPlay() override;
     virtual void SetupInputComponent() override;

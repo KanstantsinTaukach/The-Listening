@@ -3,7 +3,18 @@
 #include "TLRecordsWidget.h"
 #include "Components/VerticalBox.h"
 #include "Components/TextBlock.h"
+#include "Components/Button.h"
 #include "TLRecordItem.h"
+
+void UTLRecordsWidget::NativeOnInitialized() 
+{
+    Super::NativeOnInitialized();
+
+    if (CloseButton)
+    {
+        CloseButton->OnClicked.AddDynamic(this, &UTLRecordsWidget::OnCloseButtonClicked);
+    }
+}
 
 void UTLRecordsWidget::SetRecordList(const TArray<FSignalRecord>& Records)
 {
@@ -41,4 +52,9 @@ void UTLRecordsWidget::OnRecordSelected(FSignalRecord SelectedRecord)
     {
         AnomalyStatusText->SetText(SelectedRecord.bIsAnomalous ? FText::FromString("Anomaly") : FText::FromString("Normal"));
     }
+}
+
+void UTLRecordsWidget::OnCloseButtonClicked() 
+{
+    SetVisibility(ESlateVisibility::Hidden);
 }
