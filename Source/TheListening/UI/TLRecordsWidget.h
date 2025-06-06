@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "../Records/TLRecordLog.h"
+#include "../Lib/TLCoreTypes.h"
 #include "TLRecordsWidget.generated.h"
 
 class UTextBlock;

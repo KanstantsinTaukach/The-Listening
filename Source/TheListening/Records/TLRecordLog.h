@@ -4,22 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "../Lib/TLCoreTypes.h"
 #include "TLRecordLog.generated.h"
-
-USTRUCT(BlueprintType)
-struct FSignalRecord
-{
-    GENERATED_BODY()
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Record")
-    float Frequency;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Record")
-    FString Message;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Record")
-    bool bIsAnomalous;
-};
 
 UCLASS()
 class THELISTENING_API UTLRecordLog : public UObject

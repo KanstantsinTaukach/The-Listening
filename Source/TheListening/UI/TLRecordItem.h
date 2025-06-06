@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "../Records/TLRecordLog.h"
+#include "../Lib/TLCoreTypes.h"
 #include "TLRecordItem.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRecordItemSelectedSignature, FSignalRecord, SelectedRecord);
