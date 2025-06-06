@@ -51,9 +51,9 @@ void ATLPlayerController::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
 
     if (CurrentMatchState != ETLMatchState::InProgress) return;
+    if (IsAnyUIVisible()) return;
 
     CheckHighlightActor();
-
     HandleInput();
 }
 
@@ -71,22 +71,21 @@ void ATLPlayerController::SetupInputComponent()
 
 void ATLPlayerController::OnIncreaseFrequency()
 {
-    if (CurrentMatchState != ETLMatchState::InProgress) return;
-
-    if (RadioWidget && RadioWidget->IsInViewport())
-    {
-        CurrentFrequency = FMath::Clamp(CurrentFrequency + FrequencyStep, MinFrequency, MaxFrequency);
-        UpdateRadio();
-    }
+    ChangeFrequency(FrequencyStep);
 }
 
 void ATLPlayerController::OnDecreaseFrequency()
 {
+    ChangeFrequency(-FrequencyStep);
+}
+
+void ATLPlayerController::ChangeFrequency(float Delta)
+{
     if (CurrentMatchState != ETLMatchState::InProgress) return;
 
-    if (RadioWidget && RadioWidget->IsInViewport())
+    if (RadioWidget && RadioWidget->GetVisibility() == ESlateVisibility::Visible)
     {
-        CurrentFrequency = FMath::Clamp(CurrentFrequency - FrequencyStep, MinFrequency, MaxFrequency);
+        CurrentFrequency = FMath::Clamp(CurrentFrequency + Delta, MinFrequency, MaxFrequency);
         UpdateRadio();
     }
 }
@@ -129,7 +128,7 @@ void ATLPlayerController::RecordCurrentSignal()
 
             RadioWidget->SetMessageRecordSuccessText(CurrentStation->GetCanRecord());
         }
-        
+
         RadioWidget->ShowRecordFeedback();
     }
 }
@@ -257,7 +256,7 @@ void ATLPlayerController::OnPauseGame()
     GetWorld()->GetAuthGameMode()->SetPause(this);
 }
 
-void ATLPlayerController::OnMatchStateChanged(ETLMatchState State) 
+void ATLPlayerController::OnMatchStateChanged(ETLMatchState State)
 {
     CurrentMatchState = State;
 
@@ -272,4 +271,12 @@ void ATLPlayerController::OnMatchStateChanged(ETLMatchState State)
     {
         SetInputMode(FInputModeGameAndUI());
     }
+}
+
+bool ATLPlayerController::IsAnyUIVisible() const
+{
+    bool bRadioVisible = RadioWidget && RadioWidget->GetVisibility() == ESlateVisibility::Visible;
+    bool bRecordsWidget = RecordsWidget && RecordsWidget->GetVisibility() == ESlateVisibility::Visible;
+
+    return bRadioVisible || bRecordsWidget;
 }

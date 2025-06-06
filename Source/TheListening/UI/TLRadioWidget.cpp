@@ -92,7 +92,7 @@ void UTLRadioWidget::ShowRecordFeedback()
 
 void UTLRadioWidget::SetMessageRecordSuccessText(bool bSuccess)
 {
-    MessageRecordSuccessText->SetText(bSuccess ? FText::FromString("Success") : FText::FromString("Error"));
+    MessageRecordSuccessText->SetText(bSuccess ? FText::FromString("Success") : FText::FromString("Error!"));
 
     bSuccess ? MessageRecordSuccessText->SetColorAndOpacity(FColor::Green) : MessageRecordSuccessText->SetColorAndOpacity(FColor::Red);
 }

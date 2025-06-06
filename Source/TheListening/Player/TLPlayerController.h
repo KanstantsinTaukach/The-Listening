@@ -85,4 +85,8 @@ private:
 
     void OnPauseGame();
     void OnMatchStateChanged(ETLMatchState State);
+
+    bool IsAnyUIVisible() const;
+
+    void ChangeFrequency(float Delta);
 };
