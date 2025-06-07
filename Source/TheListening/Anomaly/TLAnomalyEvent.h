@@ -22,9 +22,13 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Anomaly")
     void OnAnomalyStart(AActor* Actor);
-
     UFUNCTION(BlueprintCallable, Category = "Anomaly")
     void OnAnomalyEnd(AActor* Actor);
+
+    UFUNCTION(BlueprintImplementableEvent, Category = "Anomaly")
+    void OnAnomalyActorStartBP(AActor* AffectedActor);
+    UFUNCTION(BlueprintImplementableEvent, Category = "Anomaly")
+    void OnAnomalyActorEndBP(AActor* AffectedActor);
 
 protected:
     UPROPERTY(EditAnywhere, Category = "Anomaly | Effects")

@@ -45,11 +45,15 @@ void ATLAnomalyEvent::ActivateAnomaly()
 void ATLAnomalyEvent::OnAnomalyStart(AActor* Actor)
 {
     UE_LOG(LogTLAnomalyEvent, Log, TEXT("Anomaly started on actor: %s"), *Actor->GetName());
+
+    OnAnomalyActorStartBP(Actor);
 }
 
 void ATLAnomalyEvent::OnAnomalyEnd(AActor* Actor)
 {
     UE_LOG(LogTLAnomalyEvent, Log, TEXT("Anomaly ended on actor: %s"), *Actor->GetName());
+
+    OnAnomalyActorEndBP(Actor);
 }
 
 void ATLAnomalyEvent::PlayCameraShake()

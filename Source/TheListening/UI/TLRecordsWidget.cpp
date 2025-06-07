@@ -96,16 +96,11 @@ void UTLRecordsWidget::OnCloseButtonClicked()
 
     SetVisibility(ESlateVisibility::Hidden);
 
-    if (bIsMissionSuccess)
+    if (bIsMissionSuccess && GetWorld())
     {
         if (const auto TLGameInstance = Cast<UTLGameInstance>(GetWorld()->GetGameInstance()))
         {
-            FName NextLevelName = TLGameInstance->GetNextLevelName();
-
-            if (GetWorld() && !NextLevelName.IsNone())
-            {
-                UGameplayStatics::OpenLevel(GetWorld(), NextLevelName);
-            }
+            TLGameInstance->LoadNextLevel();
         }
 
         bIsMissionSuccess = false;
@@ -155,22 +150,12 @@ void UTLRecordsWidget::OnSubmitButtonClicked()
         if (!bHasIgnoredAnomaly)
         {
             GetWorld()->GetTimerManager().SetTimer(
-                WarningTimerHandle,
-                [this]()
-                {
-                    OnCloseButtonClicked();  
-                },
-                3.0f, false);
+                WarningTimerHandle, [this]() { OnCloseButtonClicked(); }, 3.0f, false);
         }
         else
         {
             GetWorld()->GetTimerManager().SetTimer(
-                WarningTimerHandle, 
-                [this]() 
-                {
-                    StartBlinkEffect();
-                },
-                3.0f, false);
+                WarningTimerHandle, [this]() { StartBlinkEffect(); }, 3.0f, false);
         }
     }
 }
@@ -201,12 +186,7 @@ void UTLRecordsWidget::ProcessBlinkEffect()
             WarningPanel->SetVisibility(ESlateVisibility::Visible);
 
             GetWorld()->GetTimerManager().SetTimer(
-                WarningTimerHandle,
-                [this]()
-                {
-                    OnCloseButtonClicked();
-                },
-                3.0f, false);
+                WarningTimerHandle, [this]() { OnCloseButtonClicked(); }, 3.0f, false);
         }
         return;
     }
@@ -219,7 +199,8 @@ void UTLRecordsWidget::ProcessBlinkEffect()
         }
         else
         {
-            WarningPanel->SetVisibility(WarningPanel->GetVisibility() == ESlateVisibility::Visible ? ESlateVisibility::Hidden : ESlateVisibility::Visible);
+            WarningPanel->SetVisibility(
+                WarningPanel->GetVisibility() == ESlateVisibility::Visible ? ESlateVisibility::Hidden : ESlateVisibility::Visible);
         }
     }
 
