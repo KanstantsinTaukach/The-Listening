@@ -25,6 +25,14 @@ void ATLInteractiveObject::BeginPlay()
     }
 }
 
+void ATLInteractiveObject::EndPlay(const EEndPlayReason::Type EndPlayReason) 
+{
+    DynamicMaterials.Empty();
+    OriginalMaterials.Empty();
+
+    Super::EndPlay(EndPlayReason);
+}
+
 void ATLInteractiveObject::Highlight(bool bEnable) 
 {
     if (!MeshComponent || !HighlightMaterial) return;

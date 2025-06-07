@@ -5,6 +5,8 @@
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
 #include "TLRecordItem.h"
+#include "Kismet/GameplayStatics.h"
+#include "../Game/TLGameInstance.h"
 
 void UTLRecordsWidget::NativeOnInitialized()
 {
@@ -41,7 +43,6 @@ void UTLRecordsWidget::SetRecordList(const TArray<FSignalRecord>& Records)
         if (RecordItem && RecordListView)
         {
             RecordItem->SetRecordData(Record);
-            // RecordItem->OnRecordItemSelected.AddDynamic(this, &UTLRecordsWidget::OnRecordSelected);
             RecordItem->OnRecordItemSelected.AddDynamic(this, &UTLRecordsWidget::OnRecordItemSelected);
 
             RecordListView->AddChild(RecordItem);
@@ -94,6 +95,21 @@ void UTLRecordsWidget::OnCloseButtonClicked()
     }
 
     SetVisibility(ESlateVisibility::Hidden);
+
+    if (bIsMissionSuccess)
+    {
+        if (const auto TLGameInstance = Cast<UTLGameInstance>(GetWorld()->GetGameInstance()))
+        {
+            FName NextLevelName = TLGameInstance->GetNextLevelName();
+
+            if (GetWorld() && !NextLevelName.IsNone())
+            {
+                UGameplayStatics::OpenLevel(GetWorld(), NextLevelName);
+            }
+        }
+
+        bIsMissionSuccess = false;
+    }
 }
 
 void UTLRecordsWidget::OnSubmitButtonClicked()
@@ -134,6 +150,8 @@ void UTLRecordsWidget::OnSubmitButtonClicked()
     {
         ShowWarning("Report successfully sent!", false);
 
+        bIsMissionSuccess = true;
+
         if (!bHasIgnoredAnomaly)
         {
             GetWorld()->GetTimerManager().SetTimer(
@@ -147,8 +165,12 @@ void UTLRecordsWidget::OnSubmitButtonClicked()
         else
         {
             GetWorld()->GetTimerManager().SetTimer(
-                WarningTimerHandle, [this]() { StartBlinkEffect(); }, 3.0f, false);
-            //StartBlinkEffect();
+                WarningTimerHandle, 
+                [this]() 
+                {
+                    StartBlinkEffect();
+                },
+                3.0f, false);
         }
     }
 }
@@ -174,7 +196,7 @@ void UTLRecordsWidget::ProcessBlinkEffect()
     {
         if (WarningPanel && WarningText)
         {
-            WarningText->SetText(FText::FromString("A crucial transmission was ignored..."));
+            WarningText->SetText(FText::FromString("A critical transmission was ignored..."));
             WarningText->SetColorAndOpacity(FColor::Red);
             WarningPanel->SetVisibility(ESlateVisibility::Visible);
 

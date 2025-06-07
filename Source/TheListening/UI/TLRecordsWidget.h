@@ -10,6 +10,7 @@
 class UTextBlock;
 class UVerticalBox;
 class UButton;
+class UTLRecordItem;
 
 UCLASS()
 class THELISTENING_API UTLRecordsWidget : public UUserWidget
@@ -29,9 +30,6 @@ protected:
     UPROPERTY(meta = (BindWidget))
     UTextBlock* AnomalyStatusText;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
-    TSubclassOf<UUserWidget> RecordItemClass;
-
     UPROPERTY(meta = (BindWidget))
     UButton* CloseButton;
 
@@ -44,7 +42,8 @@ protected:
     UPROPERTY(meta = (BindWidget))
     UTextBlock* WarningText;
 
-    TArray<FSignalRecord> RecordList;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+    TSubclassOf<UUserWidget> RecordItemClass;    
 
     virtual void NativeOnInitialized() override;
 
@@ -64,11 +63,15 @@ public:
     void OnSubmitButtonClicked();
 
 private:
+    TArray<FSignalRecord> RecordList;
+
     FTimerHandle WarningTimerHandle;
     FTimerHandle BlinkTimerHandle;
 
     int32 BlinkCount = 0;
     bool bHasIgnoredAnomaly = false;
+
+    bool bIsMissionSuccess = false;
 
     // effects
     void ShowWarning(const FString& Message, bool bIsWarning = true, float Duration = 2.0f);
