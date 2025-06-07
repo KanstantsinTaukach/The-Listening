@@ -35,6 +35,15 @@ protected:
     UPROPERTY(meta = (BindWidget))
     UButton* CloseButton;
 
+    UPROPERTY(meta = (BindWidget))
+    UButton* SubmitButton;
+
+    UPROPERTY(meta = (BindWidget))
+    UWidget* WarningPanel;
+
+    UPROPERTY(meta = (BindWidget))
+    UTextBlock* WarningText;
+
     TArray<FSignalRecord> RecordList;
 
     virtual void NativeOnInitialized() override;
@@ -44,8 +53,25 @@ public:
     void SetRecordList(const TArray<FSignalRecord>& Records);
 
     UFUNCTION()
+    void OnRecordItemSelected(UTLRecordItem* SelectedItem);
+    UFUNCTION()
     void OnRecordSelected(FSignalRecord SelectedRecord);
 
     UFUNCTION()
     void OnCloseButtonClicked();
+
+    UFUNCTION()
+    void OnSubmitButtonClicked();
+
+private:
+    FTimerHandle WarningTimerHandle;
+    FTimerHandle BlinkTimerHandle;
+
+    int32 BlinkCount = 0;
+    bool bHasIgnoredAnomaly = false;
+
+    // effects
+    void ShowWarning(const FString& Message, bool bIsWarning = true, float Duration = 2.0f);
+    void StartBlinkEffect();
+    void ProcessBlinkEffect();
 };

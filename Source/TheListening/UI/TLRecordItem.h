@@ -7,7 +7,7 @@
 #include "../Lib/TLCoreTypes.h"
 #include "TLRecordItem.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRecordItemSelectedSignature, FSignalRecord, SelectedRecord);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRecordItemSelectedSignature, UTLRecordItem*, SelectedItem);
 
 class UTextBlock;
 class UImage;
@@ -29,6 +29,9 @@ protected:
     UPROPERTY(meta = (BindWidget))
     UImage* AnomalyIndicatorImage;
 
+    UPROPERTY(meta = (BindWidget))
+    UImage* SelectionIndicator;
+
 public:
     UPROPERTY(BlueprintAssignable, Category = "Events")
     FOnRecordItemSelectedSignature OnRecordItemSelected;
@@ -38,4 +41,15 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "UI")
     void OnListItemClicked();
+
+    UFUNCTION(BlueprintCallable)
+    void SetSelected(bool bIsSelected);
+
+    const FSignalRecord& GetRecordData() const { return RecordData; }
+    bool IsSelected() const { return bSelected; }
+
+    virtual void NativeOnInitialized() override;
+
+private:
+    bool bSelected = false;
 };

@@ -150,6 +150,12 @@ void ATLPlayerController::OpenRecordLogUI()
         RecordsWidget->SetVisibility(ESlateVisibility::Visible);
         RecordsWidget->SetRecordList(RadioLog->GetAllRecords());
     }
+
+    if (RecordsWidget)
+    {
+        RecordsWidget->SetVisibility(ESlateVisibility::Visible);
+        RecordsWidget->SetRecordList(RadioLog->GetAllRecords());
+    }
 }
 
 void ATLPlayerController::CloseRecordLogUI()

@@ -2,7 +2,18 @@
 
 #include "TLRecordItem.h"
 #include "Components/TextBlock.h"
+#include "Components/Button.h"
 #include "Components/Image.h"
+
+void UTLRecordItem::NativeOnInitialized()
+{
+    Super::NativeOnInitialized();
+
+    if (UButton* ItemButton = Cast<UButton>(GetRootWidget()))
+    {
+        ItemButton->OnClicked.AddDynamic(this, &UTLRecordItem::OnListItemClicked);
+    }
+}
 
 void UTLRecordItem::SetRecordData(const FSignalRecord& Record)
 {
@@ -25,7 +36,18 @@ void UTLRecordItem::SetRecordData(const FSignalRecord& Record)
     RecordData = Record;
 }
 
-void UTLRecordItem::OnListItemClicked() 
+void UTLRecordItem::OnListItemClicked()
 {
-    OnRecordItemSelected.Broadcast(RecordData);
+    SetSelected(!bSelected);
+    OnRecordItemSelected.Broadcast(this);
+}
+
+void UTLRecordItem::SetSelected(bool bIsSelected)
+{
+    bSelected = bIsSelected;
+
+    if (SelectionIndicator)
+    {
+        SelectionIndicator->SetVisibility(bIsSelected ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+    }
 }
