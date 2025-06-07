@@ -69,7 +69,7 @@ void UTLRadioWidget::OnCloseButtonClicked()
 
 void UTLRadioWidget::OnFrequencySliderValueChanged(float Value)
 {
-    const float MinFreq = 87.5f;
+    /*const float MinFreq = 87.5f;
     const float MaxFreq = 108.0f;
     float NewFrequencty = FMath::Lerp(MinFreq, MaxFreq, Value);
 
@@ -77,7 +77,7 @@ void UTLRadioWidget::OnFrequencySliderValueChanged(float Value)
     {
         PC->SetCurrentFrequency(NewFrequencty);
         PC->UpdateRadio();
-    }
+    }*/
 }
 
 void UTLRadioWidget::ShowRecordFeedback()
