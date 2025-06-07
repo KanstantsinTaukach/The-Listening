@@ -24,6 +24,9 @@ protected:
     UTextBlock* MessageText;
 
     UPROPERTY(meta = (BindWidget))
+    UTextBlock* InterestText;
+
+    UPROPERTY(meta = (BindWidget))
     UTextBlock* MessageRecordSuccessText;
 
     UPROPERTY(meta = (Bindwidget))
@@ -46,6 +49,9 @@ public:
 
     UFUNCTION(BlueprintCallable)
     void UpdateMessageDisplay(const FString& TargetMessage);
+
+    UFUNCTION(BlueprintCallable)
+    void UpdateInterestDisplay(const FString& TargetMessage);
 
     UFUNCTION()
     void OnRecordButtonClicked();

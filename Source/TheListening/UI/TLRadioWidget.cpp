@@ -48,6 +48,12 @@ void UTLRadioWidget::UpdateMessageDisplay(const FString& TargetMessage)
     MessageText->SetText(FText::FromString(TargetMessage));
 }
 
+void UTLRadioWidget::UpdateInterestDisplay(const FString& TargetMessage) 
+{
+    if (!InterestText) return;
+    InterestText->SetText(FText::FromString(TargetMessage));
+}
+
 void UTLRadioWidget::OnRecordButtonClicked()
 {
     if (const auto PC = Cast<ATLPlayerController>(GetOwningPlayer()))

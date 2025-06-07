@@ -26,6 +26,9 @@ public:
     FString GetMessage() const { return Message; };
 
     UFUNCTION()
+    FString GetInterest() const { return Interest; };
+
+    UFUNCTION()
     bool GetIsAnomalous() const { return bIsAnomalous; };
 
     UFUNCTION()
@@ -40,6 +43,9 @@ protected:
 
     UPROPERTY(EditAnywhere, Category = "Station settings | Metadata")
     FString Message;
+
+    UPROPERTY(EditAnywhere, Category = "Station settings | Metadata")
+    FString Interest;
 
     UPROPERTY(EditAnywhere, Category = "Station settings | Flags")
     bool bIsAnomalous;

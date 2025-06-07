@@ -103,6 +103,7 @@ void ATLPlayerController::UpdateRadio()
         {
             RadioWidget->UpdateMessageDisplay(Station->GetMessage());
             RadioWidget->UpdateFrequencyDisplay(CurrentFrequency);
+            RadioWidget->UpdateInterestDisplay(Station->GetInterest());
         }
     }
 }
