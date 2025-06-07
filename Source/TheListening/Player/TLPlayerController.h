@@ -64,7 +64,7 @@ private:
     const float MinFrequency = 87.5f;
     const float MaxFrequency = 108.0f;
 
-    ETLMatchState CurrentMatchState = ETLMatchState::InProgress;
+    ETLMatchState CurrentMatchState;
 
     UPROPERTY()
     UTLRadioWidget* RadioWidget;
@@ -87,6 +87,8 @@ private:
     void OnMatchStateChanged(ETLMatchState State);
 
     bool IsAnyUIVisible() const;
+    bool IsRadioWidgetVisible() const;
+    bool IsRecordsWidgetVisible() const;
 
     void ChangeFrequency(float Delta);
 };

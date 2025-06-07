@@ -83,7 +83,7 @@ void ATLPlayerController::ChangeFrequency(float Delta)
 {
     if (CurrentMatchState != ETLMatchState::InProgress) return;
 
-    if (RadioWidget && RadioWidget->GetVisibility() == ESlateVisibility::Visible)
+    if (IsRadioWidgetVisible())
     {
         CurrentFrequency = FMath::Clamp(CurrentFrequency + Delta, MinFrequency, MaxFrequency);
         UpdateRadio();
@@ -97,7 +97,7 @@ void ATLPlayerController::UpdateRadio()
     Radio->FindStation(CurrentFrequency);
     Radio->PlayCurrentStation(RadioAudioComponent);
 
-    if (RadioWidget && RadioWidget->IsInViewport())
+    if (IsRadioWidgetVisible())
     {
         if (const auto Station = Radio->GetCurrentStation())
         {
@@ -113,7 +113,7 @@ void ATLPlayerController::RecordCurrentSignal()
 
     if (!Radio || !Radio->GetCurrentStation() || !RadioLog) return;
 
-    if (RadioWidget && RadioWidget->IsInViewport())
+    if (IsRadioWidgetVisible())
     {
         if (const auto CurrentStation = Radio->GetCurrentStation())
         {
@@ -273,6 +273,10 @@ void ATLPlayerController::OnMatchStateChanged(ETLMatchState State)
         CloseRadioUI();
         CloseRecordLogUI();
     }
+    else if (State == ETLMatchState::GameOver)
+    {
+        SetInputMode(FInputModeUIOnly());
+    }
     else
     {
         SetInputMode(FInputModeGameAndUI());
@@ -281,8 +285,15 @@ void ATLPlayerController::OnMatchStateChanged(ETLMatchState State)
 
 bool ATLPlayerController::IsAnyUIVisible() const
 {
-    bool bRadioVisible = RadioWidget && RadioWidget->GetVisibility() == ESlateVisibility::Visible;
-    bool bRecordsWidget = RecordsWidget && RecordsWidget->GetVisibility() == ESlateVisibility::Visible;
+    return IsRadioWidgetVisible() || IsRecordsWidgetVisible();
+}
 
-    return bRadioVisible || bRecordsWidget;
+bool ATLPlayerController::IsRadioWidgetVisible() const
+{
+    return RadioWidget && RadioWidget->GetVisibility() == ESlateVisibility::Visible;
+}
+
+bool ATLPlayerController::IsRecordsWidgetVisible() const
+{
+    return RecordsWidget && RecordsWidget->GetVisibility() == ESlateVisibility::Visible;
 }

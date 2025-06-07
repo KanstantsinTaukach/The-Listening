@@ -24,10 +24,10 @@ public:
 
     ETLMatchState GetMatchState() const { return MatchState; };
 
+    void GameOver();
+
 private:
     ETLMatchState MatchState = ETLMatchState::WaitingToStart;
-
-    void GameOver();
 
     void SetMatchState(ETLMatchState State);
 };

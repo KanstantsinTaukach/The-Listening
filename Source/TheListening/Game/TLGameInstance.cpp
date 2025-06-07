@@ -2,6 +2,7 @@
 
 #include "TLGameInstance.h"
 #include "Kismet/GameplayStatics.h"
+#include "TLGameModeBase.h"
 
 UTLGameInstance::UTLGameInstance() 
 {
@@ -12,7 +13,7 @@ void UTLGameInstance::ItitializeLevelSequence()
 {
     LevelSequence.Reset();
 
-    for (int32 i = 1; i < 10; ++i)
+    for (int32 i = 1; i <= LevelsNum; ++i)
     {
         FString LevelName = FString::Printf(TEXT("Level_%02d"), i);
         LevelSequence.Add(FName(*LevelName));
@@ -27,12 +28,13 @@ void UTLGameInstance::LoadNextLevel()
     
     if (CurrentLevelIndex >= LevelSequence.Num() - 1)
     {
-        // open game over widget
+        if (const auto TLGameMode = Cast<ATLGameModeBase>(GetWorld()->GetAuthGameMode()))
+        {
+            TLGameMode->GameOver();
+        }
     }
     else
     {
-        CurrentLevelIndex++;
+        UGameplayStatics::OpenLevel(GetWorld(), LevelSequence[++CurrentLevelIndex]);
     }
-
-    UGameplayStatics::OpenLevel(GetWorld(), LevelSequence[CurrentLevelIndex]);
 }

@@ -24,6 +24,9 @@ protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Game")
     int32 CurrentLevelIndex = -1;
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Game")
+    int32 LevelsNum = 3;
+
 public:
     UTLGameInstance();
 
