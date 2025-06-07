@@ -22,6 +22,8 @@ void UTLRecordsWidget::SetRecordList(const TArray<FSignalRecord>& Records)
 
     RecordListView->ClearChildren();
 
+    RecordList = Records;
+
     for (const FSignalRecord& Record : Records)
     {
         const auto RecordItem = CreateWidget<UTLRecordItem>(GetWorld(), RecordItemClass);
@@ -33,6 +35,11 @@ void UTLRecordsWidget::SetRecordList(const TArray<FSignalRecord>& Records)
 
             RecordListView->AddChild(RecordItem);
         }
+    }
+
+    if (RecordList.Num() > 0)
+    {
+        OnRecordSelected(RecordList[0]);
     }
 }
 
